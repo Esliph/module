@@ -1,4 +1,4 @@
-import { METADATA_HTTP_ROUTER_HANDLER_KEY } from '@constants/index'
+import { METADATA_HTTP_ROUTER_HANDLER_KEY } from '../../constants/index'
 import { Decorator } from '@esliph/decorator'
 import { Metadata } from '@esliph/metadata'
 

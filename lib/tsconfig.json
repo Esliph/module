@@ -21,13 +21,7 @@
         "removeComments": true,
         "sourceMap": false,
         "outDir": "./dist",
-        "resolveJsonModule": true,
-        "baseUrl": "./",
-        "paths": {
-            "@*": [
-                "src/*"
-            ]
-        }
+        "resolveJsonModule": true
     },
     "exclude": [
         "./dist",

@@ -1,1 +1,1 @@
-export * from '@common/http/decorator'
+export * from '../../common/http/decorator'

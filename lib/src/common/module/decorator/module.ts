@@ -1,11 +1,11 @@
-import { Construtor } from '@@types/index'
 import { DecoratorMetadata, Metadata } from '@esliph/metadata'
-import { METADATA_MODULE_CONFIG_KEY, METADATA_MODULE_KEY } from '@constants/index'
-import { isController } from '@common/utils'
-import { isService } from '@common/utils'
 import { ResultException } from '@esliph/common'
-import { isInstance } from '@util/index'
 import { Injection } from '@esliph/injection'
+import { Construtor } from '../../../@types/index'
+import { METADATA_MODULE_CONFIG_KEY, METADATA_MODULE_KEY } from '../../../constants/index'
+import { isController } from '../../../common/utils'
+import { isService } from '../../../common/utils'
+import { isInstance } from '../../../util/index'
 
 type ProviderOptions = {
     whenCall: string

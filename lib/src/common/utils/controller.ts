@@ -1,4 +1,4 @@
-import { METADATA_CONTROLLER_KEY } from '@constants/index'
+import { METADATA_CONTROLLER_KEY } from '../../constants/index'
 import { Metadata } from '@esliph/metadata'
 
 export function isController(constructor: any) {

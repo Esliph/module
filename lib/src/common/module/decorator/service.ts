@@ -1,6 +1,6 @@
 import { DecoratorMetadata, Metadata } from '@esliph/metadata'
-import { METADATA_SERVICE_CONFIG_KEY, METADATA_SERVICE_KEY } from '@constants/index'
 import { Injection } from '@esliph/injection'
+import { METADATA_SERVICE_CONFIG_KEY, METADATA_SERVICE_KEY } from '../../../constants/index'
 
 export type ServiceConfig = {
     name: string,
