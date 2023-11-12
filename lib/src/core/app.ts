@@ -1,4 +1,3 @@
-import express from 'express'
 import { ResultException } from '@esliph/common'
 import { Injection } from '@esliph/injection'
 import { Listener } from '@services/observer.service'
@@ -7,17 +6,16 @@ import { Client, Server } from '@esliph/http'
 import { Construtor } from '@@types/index'
 import { Logger } from '@services/logger.service'
 import { ModuleConfig, ServiceConfig } from '@common/module/decorator'
-import { isModule } from '@common/module'
+import { isModule } from '@common/utils'
 import { METADATA_EVENT_CONFIG_KEY, METADATA_EVENT_HANDLER_KEY, METADATA_FILTER_CONFIG_KEY, METADATA_GUARD_CONFIG_KEY, METADATA_HTTP_ROUTER_HANDLER_KEY, METADATA_MODULE_CONFIG_KEY, METADATA_SERVICE_CONFIG_KEY } from '@constants/index'
 import { getMethodNamesByClass, isInstance } from '@util/index'
-import { isFilter } from '@common/filter'
-import { isGuard } from '@common/guard'
+import { isFilter } from '@common/utils'
+import { isGuard } from '@common/utils'
 import { GuardConfig, FilterConfig } from '@common/module/decorator'
 
 type ApplicationOptions = { serverLocal?: boolean, log?: { load?: boolean, eventHttp?: boolean, eventListener?: boolean } }
 
 export class Application {
-    static serverHttp = express()
     static server = new Server()
     static listener = new Listener()
     static client = new Client()
@@ -33,12 +31,7 @@ export class Application {
     }[]
 
     static listen(port: number) {
-        if (!Application.options.serverLocal) {
-            Application.serverHttp.listen(port, () => {
-                Application.logger.log(`Server running on port ${port}`)
-                console.log()
-            })
-        } else {
+        if (Application.options.serverLocal) {
             Application.logger.log('Server started')
             console.log()
         }
@@ -151,6 +144,7 @@ export class Application {
                 return response
             })
 
+            // @ts-expect-error
             Application.getServer()[event.metadata.method](event.metadata.event, ...handlers)
         })
     }
@@ -201,6 +195,6 @@ export class Application {
     }
 
     private static getServer() {
-        return !Application.options.serverLocal ? Application.serverHttp : Application.server
+        return !Application.options.serverLocal ? Application.server : Application.server
     }
 }
