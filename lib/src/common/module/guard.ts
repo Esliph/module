@@ -1,5 +1,5 @@
 import { DecoratorMetadata, Metadata } from '@esliph/metadata'
-import { METADATA_GUARD_CONFIG_KEY, METADATA_GUARD_KEY } from '../../../constants/index'
+import { METADATA_GUARD_CONFIG_KEY, METADATA_GUARD_KEY } from '../../constants'
 
 export type GuardConfig = {
     name: string

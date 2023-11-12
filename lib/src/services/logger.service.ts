@@ -1,5 +1,5 @@
 import { Console } from '@esliph/console'
-import { Service } from '../common/module/decorator'
+import { Service } from '../common/module'
 
 const TEMPLATE_LOG = '<prefix?value="#"&styles=italic> <dateTime>  <method?background=blue>  <context?color=green&styles=bold>: <message>'
 const TEMPLATE_ERROR = '<prefix?value="#"&styles=italic> <dateTime>  <method?background=red>  <context?color=green&styles=bold>: <message>'

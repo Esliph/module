@@ -1,4 +1,4 @@
-import { METADATA_EVENT_CONFIG_KEY, METADATA_EVENT_HANDLER_KEY } from '../../constants/index'
+import { METADATA_EVENT_CONFIG_KEY, METADATA_EVENT_HANDLER_KEY } from '../../constants'
 import { Decorator } from '@esliph/decorator'
 import { Metadata } from '@esliph/metadata'
 

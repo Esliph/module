@@ -1,5 +1,5 @@
 import { ObserverEmitter, ObserverListener } from '@esliph/observer'
-import { Service } from '../common/module/decorator'
+import { Service } from '../common/module'
 
 @Service({ name: 'observer.emitter' })
 export class Emitter extends ObserverEmitter {
