@@ -45,13 +45,15 @@ export class ApplicationModule {
     }
 
     static fabric(appModule: Construtor, options: ApplicationOptions = {}) {
+        ApplicationModule.options = options
+
         ApplicationModule.logLoad('Loading components...')
+
         if (!isModule(appModule)) {
             throw new ResultException({ title: `Class "${appModule.name}" is not a module`, message: `Apply decorator "Module" in class "${appModule.name}"` })
         }
 
         ApplicationModule.appModule = appModule
-        ApplicationModule.options = options
 
         ApplicationModule.initComponents()
         ApplicationModule.logLoad('Components initialized')
