@@ -1,6 +1,6 @@
 {
     "name": "@esliph/module",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "description": "",
     "main": "dist/index.js",
     "types": "index.d.ts",
@@ -28,14 +28,14 @@
     "author": "",
     "license": "MIT",
     "devDependencies": {
-        "@types/node": "^20.8.10",
+        "@types/node": "^20.9.0",
         "tsup": "^7.2.0",
-        "tsx": "^3.14.0",
+        "tsx": "^4.1.1",
         "typescript": "^5.2.2"
     },
     "dependencies": {
         "@esliph/common": "^1.0.2",
-        "@esliph/console": "^1.0.2",
+        "@esliph/console": "^1.0.3",
         "@esliph/decorator": "^1.0.2",
         "@esliph/http": "^1.0.2",
         "@esliph/injection": "^1.0.3",
