@@ -1,14 +1,14 @@
 import { ObserverEmitter, ObserverListener } from '@esliph/observer'
 import { Service } from '../common/module'
 
-@Service({ name: 'observer.emitter' })
+@Service({ name: 'global.observer.emitter' })
 export class Emitter extends ObserverEmitter {
     constructor() {
         super({})
     }
 }
 
-@Service({ name: 'observer.listener' })
+@Service({ name: 'global.observer.listener' })
 export class Listener extends ObserverListener {
     constructor() {
         super({})
