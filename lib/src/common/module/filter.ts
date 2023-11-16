@@ -10,7 +10,7 @@ export type FilterConfig = {
 export function Filter(config: Partial<FilterConfig> = {}) {
     function handle(constructor: any) {
         if (config.name) {
-            Injection.Injectable(config.name)(constructor)
+            Injection.Injectable(config.name, { ignoreIfExists: true })(constructor)
         }
 
         Metadata.Create.Class({ key: METADATA_FILTER_KEY, value: config }, constructor)

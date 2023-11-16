@@ -10,7 +10,7 @@ export type ServiceConfig = {
 export function Service(config: Partial<ServiceConfig> = {}) {
     function handle(constructor: any) {
         if (config.name) {
-            Injection.Injectable(config.name)(constructor)
+            Injection.Injectable(config.name, { ignoreIfExists: true })(constructor)
         }
 
         if (!config.context) {
