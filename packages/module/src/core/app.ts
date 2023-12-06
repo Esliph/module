@@ -38,8 +38,8 @@ export class ApplicationModule {
     }[]
 
     static listen(port: number) {
-        ApplicationModule.adapters.map(({ instance }) => {
-            instance.listen({ port }, () => {
+        ApplicationModule.adapters.map(adapter => {
+            adapter.listen({ port }, () => {
                 ApplicationModule.logger.log(`Server started on PORT ${port}`)
             })
         })
@@ -63,7 +63,7 @@ export class ApplicationModule {
     static useLogger(logger: Console) {
         ApplicationModule.logger = logger
 
-        Injection.whenCall('global.service.logger').use(logger.constructor)
+        Injection.whenCall('global.service.logger').use(logger.constructor as any)
     }
 
     static useAdapter(adapter: Adapter) {
@@ -219,8 +219,7 @@ export class ApplicationModule {
                 )
             } else {
                 ApplicationModule.logger.error(
-                    `${arg.request.method} ${arg.request.name} {"error": "${arg.response.getError().message}"${
-                        arg.request.headers.playerId ? `, "player" ${arg.request.headers.playerId}}` : '}'
+                    `${arg.request.method} ${arg.request.name} {"error": "${arg.response.getError().message}"${arg.request.headers.playerId ? `, "player" ${arg.request.headers.playerId}}` : '}'
                     }`,
                     null,
                     { context: '[HTTP]' }
