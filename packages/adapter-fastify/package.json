@@ -1,6 +1,6 @@
 {
-    "name": "@esliph/module",
-    "version": "1.0.1",
+    "name": "@esliph/adapter-fastify",
+    "version": "1.0.0",
     "description": "",
     "main": "dist/index.js",
     "types": "index.d.ts",
@@ -34,13 +34,9 @@
         "typescript": "^5.2.2"
     },
     "dependencies": {
-        "@esliph/common": "^1.0.2",
-        "@esliph/console": "^1.0.3",
         "@esliph/decorator": "^1.0.2",
-        "@esliph/http": "^1.0.3",
-        "@esliph/injection": "^1.0.6",
         "@esliph/metadata": "^1.0.1",
-        "@esliph/observer": "^1.0.0",
-        "@esliph/repository-memory": "^1.0.0"
+        "@esliph/module": "file:../module",
+        "fastify": "^4.24.3"
     }
 }

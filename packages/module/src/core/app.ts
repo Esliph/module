@@ -1,6 +1,6 @@
 import { ResultException } from '@esliph/common'
 import { Injection } from '@esliph/injection'
-import { Metadata } from '@esliph/metadata'
+import { ClassConstructor, Metadata } from '@esliph/metadata'
 import { Console } from '@esliph/console'
 import { Client, Server } from '@esliph/http'
 import { Listener } from '../services/observer.service'
@@ -8,6 +8,7 @@ import { Construtor } from '../@types'
 import { Logger } from '../services/logger.service'
 import { ModuleConfig, ServiceConfig } from '../common/module'
 import {
+    METADATA_ADAPTER_HTTP_ROUTER_HANDLER_KEY,
     METADATA_EVENT_CONFIG_KEY,
     METADATA_EVENT_HANDLER_KEY,
     METADATA_FILTER_CONFIG_KEY,
@@ -20,12 +21,13 @@ import { getMethodNamesByClass, isInstance } from '../util'
 import { isModule, isFilter, isGuard } from '../common/utils'
 import { GuardConfig, FilterConfig } from '../common/module'
 
-type ApplicationOptions = { serverLocal?: boolean; log?: { load?: boolean; eventHttp?: boolean; eventListener?: boolean } }
+export type ApplicationOptions = { serverLocal?: boolean; log?: { load?: boolean; eventHttp?: boolean; eventListener?: boolean }; adapter?: any; port?: number }
 
 export class ApplicationModule {
     static server = new Server()
     static listener = new Listener()
     static client = new Client()
+    static adapter: any = null
     static logger: Console<any, any, any, any> = new Logger()
     private static appModule: Construtor
     private static options: ApplicationOptions
@@ -38,9 +40,12 @@ export class ApplicationModule {
     }[]
 
     static listen(port: number) {
-        if (ApplicationModule.options.serverLocal) {
+        if (!ApplicationModule.options.serverLocal) {
+            ApplicationModule.adapter.instance.listen({ port }, () => {
+                ApplicationModule.logger.log(`Server started on PORT ${port}`)
+            })
+        } else {
             ApplicationModule.logger.log('Server started')
-            console.log()
         }
     }
 
@@ -63,6 +68,10 @@ export class ApplicationModule {
         ApplicationModule.logger = logger
 
         Injection.whenCall('global.service.logger').use(logger.constructor)
+    }
+
+    static useAdapter(Adapter: ClassConstructor) {
+        ApplicationModule.adapter = new Adapter()
     }
 
     private static initComponents() {
@@ -146,10 +155,12 @@ export class ApplicationModule {
     }
 
     private static loadEventsHttp(controller: Construtor, instance: any) {
-        const events = ApplicationModule.getMethodsInClassByMetadataKey<{ event: string; method: string }>(controller, METADATA_HTTP_ROUTER_HANDLER_KEY)
+        const events = ApplicationModule.getEventsOfTheController(controller)
 
         events.map(event => {
-            ApplicationModule.logLoad(`Loading Event HTTP ${event.metadata.method.toUpperCase()} "${event.metadata.event}"`)
+            ApplicationModule.logLoad(
+                `Loading Event HTTP${event.client == 'server' ? ' Adapter' : ''} ${event.metadata.method.toUpperCase()} "${event.metadata.event}"`
+            )
 
             const handlers: ((...args: any[]) => any)[] = []
 
@@ -159,7 +170,9 @@ export class ApplicationModule {
                 const filter = ApplicationModule.filters.find(filter => (filter.metadata.name = methodMetadata.name))
 
                 if (filter && filter.instance.perform) {
-                    ApplicationModule.logLoad(`Loading Guard HTTP "${filter.class.name}" in "${event.metadata.event}"`)
+                    ApplicationModule.logLoad(
+                        `Loading Guard HTTP${event.client == 'server' ? ' Adapter' : ''} "${filter.class.name}" in "${event.metadata.event}"`
+                    )
 
                     handlers.push(async (req, res) => {
                         const response = await filter.instance.perform(req, res)
@@ -175,8 +188,12 @@ export class ApplicationModule {
                 return response
             })
 
-            // @ts-expect-error
-            ApplicationModule.getServer()[event.metadata.method](event.metadata.event, ...handlers)
+            if (event.client == 'ADAPTER') {
+                ApplicationModule.adapter.loadEvent({ ...event.metadata, handlers })
+            } else {
+                // @ts-expect-error
+                ApplicationModule.server[event.metadata.method](event.metadata.event, ...handlers)
+            }
         })
     }
 
@@ -237,13 +254,23 @@ export class ApplicationModule {
         ApplicationModule.logger.log(message, null, { context: 'LISTENER' })
     }
 
+    private static getEventsOfTheController(controller: Construtor) {
+        const events = [
+            ...ApplicationModule.getMethodsInClassByMetadataKey<{ event: string; method: string }>(controller, METADATA_HTTP_ROUTER_HANDLER_KEY).map(event => ({
+                ...event,
+                client: 'LOCAL',
+            })),
+            ...ApplicationModule.getMethodsInClassByMetadataKey<{ event: string; method: string }>(controller, METADATA_ADAPTER_HTTP_ROUTER_HANDLER_KEY).map(
+                event => ({ ...event, client: 'ADAPTER' })
+            ),
+        ]
+
+        return events
+    }
+
     private static getMethodsInClassByMetadataKey<Metadata = any>(classConstructor: Construtor, key: string) {
         return getMethodNamesByClass(classConstructor)
             .map(methodName => ({ method: methodName, metadata: Metadata.Get.Method<Metadata>(key, classConstructor, methodName) }))
             .filter(({ metadata }) => !!metadata)
-    }
-
-    private static getServer() {
-        return !ApplicationModule.options.serverLocal ? ApplicationModule.server : ApplicationModule.server
     }
 }

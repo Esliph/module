@@ -14,3 +14,5 @@ export const METADATA_FILTER_CONFIG_KEY = `${METADATA_FILTER_KEY}.options`
 export const METADATA_EVENT_HANDLER_KEY = 'listener.handler.event'
 export const METADATA_EVENT_CONFIG_KEY = `${METADATA_EVENT_HANDLER_KEY}.options`
 export const METADATA_HTTP_ROUTER_HANDLER_KEY = 'http.router.event'
+export const METADATA_ADAPTER_KEY = 'adapter'
+export const METADATA_ADAPTER_HTTP_ROUTER_HANDLER_KEY = `${METADATA_ADAPTER_KEY}.adapter.http.router.event`

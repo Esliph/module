@@ -1,0 +1,47 @@
+{
+    "name": "@esliph/module",
+    "version": "1.0.1",
+    "description": "",
+    "main": "dist/index.js",
+    "types": "index.d.ts",
+    "private": false,
+    "scripts": {
+        "start": "node dist/index.js",
+        "rebuild": "rm -r dist --force && npx tsc",
+        "test": "tsx watch src/test/index.ts",
+        "build": "npx tsc",
+        "publish": "npm publish --access public"
+    },
+    "exports": {
+        ".": {
+            "require": "./dist/index.js",
+            "import": "./dist/index.js",
+            "types": "./index.d.ts"
+        },
+        "./package.json": "./package.json"
+    },
+    "files": [
+        "/dist",
+        "/index.d.ts"
+    ],
+    "keywords": [],
+    "author": "",
+    "license": "MIT",
+    "devDependencies": {
+        "@types/node": "^20.9.0",
+        "tsup": "^7.2.0",
+        "tsx": "^4.1.2",
+        "typescript": "^5.2.2"
+    },
+    "dependencies": {
+        "@esliph/common": "^1.0.2",
+        "@esliph/console": "^1.0.3",
+        "@esliph/decorator": "^1.0.2",
+        "@esliph/http": "^1.0.3",
+        "@esliph/injection": "^1.0.6",
+        "@esliph/metadata": "^1.0.1",
+        "@esliph/observer": "^1.0.0",
+        "@esliph/repository-memory": "^1.0.0",
+        "fastify": "^4.24.3"
+    }
+}
