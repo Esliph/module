@@ -1,10 +1,10 @@
-import { Controller, Module, Bootstrap, Guard, Filter, FilterPerform, Adapter, AdapterLoadEventOptions } from '@esliph/module'
+import { Adapter, AdapterLoadEventOptions } from '@esliph/module'
 import { Decorator } from '@esliph/decorator'
 import { Metadata } from '@esliph/metadata'
-import { Request, Response } from '@esliph/http'
 import Fastify from 'fastify'
+import { FastifyInstance } from 'fastify'
 
-export const METADATA_ADAPTER_FASTIFY_HTTP_ROUTER_HANDLER_KEY = 'fastify.adapter.http.router.event'
+const METADATA_ADAPTER_FASTIFY_HTTP_ROUTER_HANDLER_KEY = 'fastify.adapter.http.router.event'
 
 export function Get(name: string) {
     function handle(target: any, key: string, descriptor: PropertyDescriptor) {
@@ -60,8 +60,10 @@ function onEvent(method: string, name: string, key: string, target: any) {
     Metadata.Create.Method({ key: METADATA_ADAPTER_FASTIFY_HTTP_ROUTER_HANDLER_KEY, value: { event: name, method } }, target, key)
 }
 
-export class FastifyAdapter implements Adapter {
+export class FastifyAdapter implements Adapter<FastifyInstance> {
     static instance = Fastify()
+
+    adapterKey = METADATA_ADAPTER_FASTIFY_HTTP_ROUTER_HANDLER_KEY
 
     loadEvent({ handlers, event, method }: AdapterLoadEventOptions) {
         // @ts-expect-error

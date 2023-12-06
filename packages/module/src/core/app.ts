@@ -8,12 +8,10 @@ import { Construtor } from '../@types'
 import { Logger } from '../services/logger.service'
 import { ModuleConfig, ServiceConfig } from '../common/module'
 import {
-    METADATA_ADAPTER_HTTP_ROUTER_HANDLER_KEY,
     METADATA_EVENT_CONFIG_KEY,
     METADATA_EVENT_HANDLER_KEY,
     METADATA_FILTER_CONFIG_KEY,
     METADATA_GUARD_CONFIG_KEY,
-    METADATA_HTTP_ROUTER_HANDLER_KEY,
     METADATA_MODULE_CONFIG_KEY,
     METADATA_SERVICE_CONFIG_KEY,
 } from '../constants'
@@ -22,14 +20,12 @@ import { Adapter } from '../adapter'
 import { isModule, isFilter, isGuard } from '../common/utils'
 import { GuardConfig, FilterConfig } from '../common/module'
 
-export type ApplicationOptions = { serverLocal?: boolean; log?: { load?: boolean; eventHttp?: boolean; eventListener?: boolean }; port?: number }
+export type ApplicationOptions = { log?: { load?: boolean; eventHttp?: boolean; eventListener?: boolean }; port?: number }
 
 export class ApplicationModule {
-    static server = new Server()
     static listener = new Listener()
     static client = new Client()
-    static adapter: any = null
-    static adapters: { instance: Adapter; metadataKey: string }[] = []
+    static adapters: Adapter[] = []
     static logger: Console<any, any, any, any> = new Logger()
     private static appModule: Construtor
     private static options: ApplicationOptions
@@ -42,13 +38,11 @@ export class ApplicationModule {
     }[]
 
     static listen(port: number) {
-        if (!ApplicationModule.options.serverLocal) {
-            ApplicationModule.adapter.instance.listen({ port }, () => {
+        ApplicationModule.adapters.map(({ instance }) => {
+            instance.listen({ port }, () => {
                 ApplicationModule.logger.log(`Server started on PORT ${port}`)
             })
-        } else {
-            ApplicationModule.logger.log('Server started')
-        }
+        })
     }
 
     static fabric(appModule: Construtor, options: ApplicationOptions = {}) {
@@ -72,10 +66,8 @@ export class ApplicationModule {
         Injection.whenCall('global.service.logger').use(logger.constructor)
     }
 
-    static useAdapter({ Adapter, metadataKey }: { Adapter: ClassConstructor<Adapter>; metadataKey: string }) {
-        ApplicationModule.adapter = new Adapter()
-
-        ApplicationModule.adapters.push({ instance: new Adapter(), metadataKey })
+    static useAdapter(adapter: Adapter) {
+        ApplicationModule.adapters.push(adapter)
     }
 
     private static initComponents() {
@@ -133,8 +125,6 @@ export class ApplicationModule {
         }
     }
 
-    private static getAllModules() {}
-
     private static initFilters() {
         ApplicationModule.filters = ApplicationModule.providers
             .filter(provider => isInstance(provider) && isFilter(provider))
@@ -159,12 +149,24 @@ export class ApplicationModule {
     }
 
     private static loadEventsHttp(controller: Construtor, instance: any) {
-        const events = ApplicationModule.getEventsOfTheController(controller)
+        const events = ApplicationModule.getAllEventsOfController(controller, instance)
 
         events.map(event => {
-            // const adapter = ApplicationModule.getAdapterByMetadataKey(event.)
+            event.adapter.instance.loadEvent({ ...event.metadata, handlers: event.handlers })
+        })
+    }
 
-            ApplicationModule.logLoad(`Loading Event HTTP ${event.metadata} ${event.metadata.method.toUpperCase()} "${event.metadata.event}"`)
+    private static getAllEventsOfController(controller: Construtor, instance: any) {
+        return ApplicationModule.getEventsOfTheController(controller).map(event => {
+            const adapter = ApplicationModule.getAdapterByMetadataKey(event.adapterKey)
+
+            if (!adapter) {
+                throw new Error(`Adapter key "${event.adapterKey}" not found`)
+            }
+
+            ApplicationModule.logLoad(
+                `Loading Event HTTP Adapter "${adapter.instance.constructor.name}" ${event.metadata.method.toUpperCase()} "${event.metadata.event}"`
+            )
 
             const handlers: ((...args: any[]) => any)[] = []
 
@@ -174,9 +176,7 @@ export class ApplicationModule {
                 const filter = ApplicationModule.filters.find(filter => (filter.metadata.name = methodMetadata.name))
 
                 if (filter && filter.instance.perform) {
-                    ApplicationModule.logLoad(
-                        `Loading Guard HTTP${event.client == 'server' ? ' Adapter' : ''} "${filter.class.name}" in "${event.metadata.event}"`
-                    )
+                    ApplicationModule.logLoad(`Loading Guard HTTP "${filter.class.name}" in "${event.metadata.event}"`)
 
                     handlers.push(async (req, res) => {
                         const response = await filter.instance.perform(req, res)
@@ -192,12 +192,7 @@ export class ApplicationModule {
                 return response
             })
 
-            if (event.client == 'ADAPTER') {
-                ApplicationModule.adapter.loadEvent({ ...event.metadata, handlers })
-            } else {
-                // @ts-expect-error
-                ApplicationModule.server[event.metadata.method](event.metadata.event, ...handlers)
-            }
+            return { ...event, handlers, adapter }
         })
     }
 
@@ -260,14 +255,17 @@ export class ApplicationModule {
 
     private static getEventsOfTheController(controller: Construtor) {
         const events = ([] as any[]).concat(
-            ...ApplicationModule.adapters.map(({ metadataKey }) => {
-                return ApplicationModule.getMethodsInClassByMetadataKey<{ event: string; method: string }>(controller, metadataKey).map(event => ({
-                    ...event,
-                    metadataKey,
-                }))
+            ...ApplicationModule.adapters.map(({ adapterKey }) => {
+                return ApplicationModule.getMethodsInClassByMetadataKey<{ event: string; method: string; adapterKey: string }>(controller, adapterKey).map(
+                    event => ({
+                        ...event,
+                        adapterKey,
+                    })
+                )
             })
         ) as {
             method: string
+            adapterKey: string
             metadata: {
                 event: string
                 method: string
@@ -284,6 +282,6 @@ export class ApplicationModule {
     }
 
     private static getAdapterByMetadataKey(key: string) {
-        return ApplicationModule.adapters.find(({ metadataKey }) => metadataKey == key) || null
+        return ApplicationModule.adapters.find(({ adapterKey }) => adapterKey == key) || null
     }
 }
