@@ -1,4 +1,4 @@
-import { Adapter, AdapterLoadEventOptions } from '@esliph/module'
+import { Adapter, AdapterLoadEventOptions } from '@esliph/module/dist/adapter'
 import { Decorator } from '@esliph/decorator'
 import { Metadata } from '@esliph/metadata'
 import Fastify from 'fastify'
