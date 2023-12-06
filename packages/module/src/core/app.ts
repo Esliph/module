@@ -18,16 +18,18 @@ import {
     METADATA_SERVICE_CONFIG_KEY,
 } from '../constants'
 import { getMethodNamesByClass, isInstance } from '../util'
+import { Adapter } from '../adapter'
 import { isModule, isFilter, isGuard } from '../common/utils'
 import { GuardConfig, FilterConfig } from '../common/module'
 
-export type ApplicationOptions = { serverLocal?: boolean; log?: { load?: boolean; eventHttp?: boolean; eventListener?: boolean }; adapter?: any; port?: number }
+export type ApplicationOptions = { serverLocal?: boolean; log?: { load?: boolean; eventHttp?: boolean; eventListener?: boolean }; port?: number }
 
 export class ApplicationModule {
     static server = new Server()
     static listener = new Listener()
     static client = new Client()
     static adapter: any = null
+    static adapters: { instance: Adapter; metadataKey: string }[] = []
     static logger: Console<any, any, any, any> = new Logger()
     private static appModule: Construtor
     private static options: ApplicationOptions
@@ -70,8 +72,10 @@ export class ApplicationModule {
         Injection.whenCall('global.service.logger').use(logger.constructor)
     }
 
-    static useAdapter(Adapter: ClassConstructor) {
+    static useAdapter({ Adapter, metadataKey }: { Adapter: ClassConstructor<Adapter>; metadataKey: string }) {
         ApplicationModule.adapter = new Adapter()
+
+        ApplicationModule.adapters.push({ instance: new Adapter(), metadataKey })
     }
 
     private static initComponents() {
@@ -158,9 +162,9 @@ export class ApplicationModule {
         const events = ApplicationModule.getEventsOfTheController(controller)
 
         events.map(event => {
-            ApplicationModule.logLoad(
-                `Loading Event HTTP${event.client == 'server' ? ' Adapter' : ''} ${event.metadata.method.toUpperCase()} "${event.metadata.event}"`
-            )
+            // const adapter = ApplicationModule.getAdapterByMetadataKey(event.)
+
+            ApplicationModule.logLoad(`Loading Event HTTP ${event.metadata} ${event.metadata.method.toUpperCase()} "${event.metadata.event}"`)
 
             const handlers: ((...args: any[]) => any)[] = []
 
@@ -255,15 +259,20 @@ export class ApplicationModule {
     }
 
     private static getEventsOfTheController(controller: Construtor) {
-        const events = [
-            ...ApplicationModule.getMethodsInClassByMetadataKey<{ event: string; method: string }>(controller, METADATA_HTTP_ROUTER_HANDLER_KEY).map(event => ({
-                ...event,
-                client: 'LOCAL',
-            })),
-            ...ApplicationModule.getMethodsInClassByMetadataKey<{ event: string; method: string }>(controller, METADATA_ADAPTER_HTTP_ROUTER_HANDLER_KEY).map(
-                event => ({ ...event, client: 'ADAPTER' })
-            ),
-        ]
+        const events = ([] as any[]).concat(
+            ...ApplicationModule.adapters.map(({ metadataKey }) => {
+                return ApplicationModule.getMethodsInClassByMetadataKey<{ event: string; method: string }>(controller, metadataKey).map(event => ({
+                    ...event,
+                    metadataKey,
+                }))
+            })
+        ) as {
+            method: string
+            metadata: {
+                event: string
+                method: string
+            }
+        }[]
 
         return events
     }
@@ -272,5 +281,9 @@ export class ApplicationModule {
         return getMethodNamesByClass(classConstructor)
             .map(methodName => ({ method: methodName, metadata: Metadata.Get.Method<Metadata>(key, classConstructor, methodName) }))
             .filter(({ metadata }) => !!metadata)
+    }
+
+    private static getAdapterByMetadataKey(key: string) {
+        return ApplicationModule.adapters.find(({ metadataKey }) => metadataKey == key) || null
     }
 }

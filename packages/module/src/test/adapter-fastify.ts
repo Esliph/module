@@ -4,6 +4,7 @@ import { Metadata } from '@esliph/metadata'
 import Fastify from 'fastify'
 import { Filter, FilterPerform } from '../common'
 import { Request, Response } from '@esliph/http'
+import { Adapter, AdapterLoadEventOptions } from '../adapter'
 
 export const METADATA_ADAPTER_HTTP_ROUTER_HANDLER_KEY = 'adapter.adapter.http.router.event'
 
@@ -83,10 +84,10 @@ class UserController {
 })
 class UserModule {}
 
-class FastifyAdapter {
+class FastifyAdapter implements Adapter {
     private static instance = Fastify()
 
-    loadEvent({ handlers, event, method }: { event: string; method: string; handlers: any[] }) {
+    loadEvent({ handlers, event, method }: AdapterLoadEventOptions) {
         this.instance[method](event, {}, ...handlers)
     }
 
@@ -95,4 +96,8 @@ class FastifyAdapter {
     }
 }
 
-Bootstrap(UserModule, { log: { load: true, eventListener: true, eventHttp: true }, adapter: FastifyAdapter, port: 8080 })
+Bootstrap(UserModule, {
+    log: { load: true, eventListener: true, eventHttp: true },
+    adapters: [{ Adapter: FastifyAdapter, metadataKey: METADATA_ADAPTER_HTTP_ROUTER_HANDLER_KEY }],
+    port: 8080,
+})
