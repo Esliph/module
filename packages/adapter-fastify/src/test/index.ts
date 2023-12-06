@@ -1,8 +1,8 @@
-import { Controller, Module, Bootstrap } from '../../../module/src/index'
+import { Controller, Module, Bootstrap } from '../../../module/src'
 import { Decorator } from '@esliph/decorator'
 import { Metadata } from '@esliph/metadata'
 
-export const METADATA_ADAPTER_HTTP_ROUTER_HANDLER_KEY = 'adapter.adapter.http.router.event'
+export const METADATA_ADAPTER_FASTIFY_HTTP_ROUTER_HANDLER_KEY = 'adapter.adapter.http.router.event'
 
 export function Get(name: string) {
     function handle(target: any, key: string, descriptor: PropertyDescriptor) {
@@ -55,7 +55,7 @@ export function Put(name: string) {
 }
 
 function onEvent(method: string, name: string, key: string, target: any) {
-    Metadata.Create.Method({ key: METADATA_ADAPTER_HTTP_ROUTER_HANDLER_KEY, value: { event: name, method } }, target, key)
+    Metadata.Create.Method({ key: METADATA_ADAPTER_FASTIFY_HTTP_ROUTER_HANDLER_KEY, value: { event: name, method } }, target, key)
 }
 
 @Controller()
@@ -69,4 +69,4 @@ class UserController {
 })
 class UserModule {}
 
-Bootstrap(UserModule, { logLoad: true, logEventHttp: true, logEventListener: true })
+Bootstrap(UserModule, { log: { eventHttp: true, eventListener: true, load: true }, port: 8080 })
