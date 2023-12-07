@@ -152,7 +152,7 @@ export class ApplicationModule {
         const events = ApplicationModule.getAllEventsOfController(controller, instance)
 
         events.map(event => {
-            event.adapter.instance.loadEvent({ ...event.metadata, handlers: event.handlers })
+            event.adapter.loadEvent({ ...event.metadata, handlers: event.handlers })
         })
     }
 
@@ -165,7 +165,7 @@ export class ApplicationModule {
             }
 
             ApplicationModule.logLoad(
-                `Loading Event HTTP Adapter "${adapter.instance.constructor.name}" ${event.metadata.method.toUpperCase()} "${event.metadata.event}"`
+                `Loading Event HTTP Adapter "${adapter.constructor.name}" ${event.metadata.method.toUpperCase()} "${event.metadata.event}"`
             )
 
             const handlers: ((...args: any[]) => any)[] = []
