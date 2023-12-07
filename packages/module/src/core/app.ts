@@ -40,7 +40,7 @@ export class ApplicationModule {
     static listen(port: number) {
         ApplicationModule.adapters.map(adapter => {
             adapter.listen({ port }, () => {
-                ApplicationModule.logger.log(`Server started on PORT ${port}`)
+                ApplicationModule.logger.log(`Adapter ${adapter.constructor.name} started on PORT ${port}`)
             })
         })
     }
@@ -68,6 +68,8 @@ export class ApplicationModule {
 
     static useAdapter(adapter: Adapter) {
         ApplicationModule.adapters.push(adapter)
+
+        ApplicationModule.logLoad(`Loading Adapter "${adapter.constructor.name}"`)
     }
 
     private static initComponents() {
@@ -107,15 +109,9 @@ export class ApplicationModule {
         configModule.imports.map(module => {
             const configs = ApplicationModule.loadModule(module)
 
-            configs.modules.forEach(imp => {
-                modules.push(imp)
-            })
-            configs.controllers.forEach(imp => {
-                controllers.push(imp)
-            })
-            configs.providers.forEach(imp => {
-                providers.push(imp)
-            })
+            modules.concat(configs.modules)
+            controllers.concat(configs.controllers)
+            providers.concat(configs.providers)
         })
 
         return {

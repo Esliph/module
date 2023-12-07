@@ -12,29 +12,29 @@ class AppService {
 
 @Controller()
 class AppController {
-    constructor(@Injection.Inject('app.service') private service: AppService, @Injection.Inject('global.service.logger') private logget: Console) {}
+    constructor(@Injection.Inject('app.service') private service: AppService, @Injection.Inject('global.service.logger') private logger: Console) { }
 
     @Get('/hello')
     hello() {
-        this.logget.error('Teste')
+        this.logger.error('Teste')
 
         return this.service.hello()
     }
 }
 
 @Module({ providers: [AppService] })
-class TestModule {}
+class TestModule { }
 
 @Module({
     imports: [TestModule],
     controllers: [AppController],
     providers: [],
 })
-class AppModule {}
+class AppModule { }
 
 @Service({ name: 'logger' })
-class Consol extends Console {}
+class Consol extends Console { }
 
-const application = Bootstrap(AppModule, { logEventHttp: true, logEventListener: true, logLoad: true })
+const application = Bootstrap(AppModule, { log: { load: true, eventHttp: true, eventListener: true } })
 
 new Client().get('/hello').then(res => console.log(res))
