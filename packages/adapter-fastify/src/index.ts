@@ -1,8 +1,9 @@
 import { Adapter, AdapterLoadEventOptions } from '@esliph/module/dist/adapter'
 import { Decorator } from '@esliph/decorator'
 import { Metadata } from '@esliph/metadata'
+import { Request, Response, EventRouter } from '@esliph/http'
 import Fastify from 'fastify'
-import { FastifyInstance } from 'fastify'
+import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 
 const METADATA_ADAPTER_FASTIFY_HTTP_ROUTER_HANDLER_KEY = 'fastify.adapter.http.router.event'
 
@@ -67,7 +68,19 @@ export class FastifyAdapter implements Adapter<FastifyInstance> {
 
     loadEvent({ handlers, event, method }: AdapterLoadEventOptions) {
         // @ts-expect-error
-        this.instance[method](event, {}, ...handlers)
+        this.instance[method](event, async (req: FastifyRequest, res: FastifyReply) => {
+            const request = new Request({ headers: req.headers, body: req.body, params: req.params || {}, method: req.method as any, name: req.routeOptions.url })
+
+            const eventRouter = new EventRouter(request, handlers || ([] as any), true)
+
+            await eventRouter.perform()
+
+            const result = eventRouter.response.getResponse()
+
+            console.log(result)
+
+            res.status(result.getStatus()).send(result.getResponse())
+        })
     }
 
     listen(args: { port: number }, handler: () => any): void {

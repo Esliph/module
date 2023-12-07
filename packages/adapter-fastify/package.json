@@ -35,7 +35,7 @@
     },
     "dependencies": {
         "@esliph/decorator": "^1.0.2",
-        "@esliph/http": "^1.0.3",
+        "@esliph/http": "^1.0.4",
         "@esliph/metadata": "^1.0.1",
         "@esliph/module": "^1.0.5",
         "fastify": "^4.24.3"
