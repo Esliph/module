@@ -109,9 +109,9 @@ export class ApplicationModule {
         configModule.imports.map(module => {
             const configs = ApplicationModule.loadModule(module)
 
-            modules.concat(configs.modules)
-            controllers.concat(configs.controllers)
-            providers.concat(configs.providers)
+            configs.modules.map(module => modules.push(module))
+            configs.controllers.map(controller => controllers.push(controller))
+            configs.providers.map(provider => providers.push(provider))
         })
 
         return {
