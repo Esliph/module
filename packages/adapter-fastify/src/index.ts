@@ -1,7 +1,7 @@
 import { Adapter, AdapterLoadEventOptions } from '@esliph/module/dist/adapter'
 import { Decorator } from '@esliph/decorator'
 import { Metadata } from '@esliph/metadata'
-import { Request, Response, EventRouter } from '@esliph/http'
+import { Request, EventRouter } from '@esliph/http'
 import Fastify from 'fastify'
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 

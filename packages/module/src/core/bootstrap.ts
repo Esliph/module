@@ -4,7 +4,7 @@ import { Adapter } from '../adapter'
 import { LocalAdapter } from '../common/http/adapter-local'
 import { ApplicationModule, ApplicationOptions } from '../core/app'
 
-export type BootstrapOptions = ApplicationOptions & { logger: Console; adapters: Adapter[] }
+export type BootstrapOptions = ApplicationOptions & { logger: Console<any, any, any, any>; adapters: Adapter[] }
 
 export function Bootstrap(appModule: Construtor, options: Partial<BootstrapOptions> = {}) {
     if (options.logger) {

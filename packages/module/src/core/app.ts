@@ -1,8 +1,8 @@
 import { ResultException } from '@esliph/common'
 import { Injection } from '@esliph/injection'
-import { ClassConstructor, Metadata } from '@esliph/metadata'
+import { Metadata } from '@esliph/metadata'
 import { Console } from '@esliph/console'
-import { Client, Server } from '@esliph/http'
+import { Client } from '@esliph/http'
 import { Listener } from '../services/observer.service'
 import { Construtor } from '../@types'
 import { Logger } from '../services/logger.service'
@@ -60,7 +60,7 @@ export class ApplicationModule {
         ApplicationModule.logLoad('Components initialized')
     }
 
-    static useLogger(logger: Console) {
+    static useLogger(logger: Console<any, any, any, any>) {
         ApplicationModule.logger = logger
 
         Injection.whenCall('global.service.logger').use(logger.constructor as any)
