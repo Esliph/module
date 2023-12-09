@@ -77,8 +77,6 @@ export class FastifyAdapter implements Adapter<FastifyInstance> {
 
             const result = eventRouter.response.getResponse()
 
-            console.log(result)
-
             res.status(result.getStatus()).send(result.getResponse())
         })
     }
