@@ -62,14 +62,21 @@ function onEvent(method: string, name: string, key: string, target: any) {
 }
 
 export class FastifyAdapter implements Adapter<FastifyInstance> {
-    static instance = Fastify()
+    // @ts-expect-error
+    static instance: FastifyInstance = null
 
     adapterKey = METADATA_ADAPTER_FASTIFY_HTTP_ROUTER_HANDLER_KEY
 
     loadEvent({ handlers, event, method }: AdapterLoadEventOptions) {
         // @ts-expect-error
         this.instance[method](event, async (req: FastifyRequest, res: FastifyReply) => {
-            const request = new Request({ headers: req.headers, body: req.body, params: req.params || {}, method: req.method as any, name: req.routeOptions.url })
+            const request = new Request({
+                headers: req.headers,
+                body: req.body,
+                params: (req.params as any) || {},
+                method: req.method as any,
+                name: req.routeOptions.url,
+            })
 
             const eventRouter = new EventRouter(request, handlers || ([] as any), true)
 
@@ -81,8 +88,12 @@ export class FastifyAdapter implements Adapter<FastifyInstance> {
         })
     }
 
-    listen(args: { port: number }, handler: () => any): void {
-        this.instance.listen(args, handler)
+    loadInstance(instance: FastifyInstance) {
+        FastifyAdapter.loadInstance(instance)
+    }
+
+    static loadInstance(instance: FastifyInstance) {
+        FastifyAdapter.instance = instance
     }
 
     get instance() {
