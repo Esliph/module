@@ -1,6 +1,6 @@
 {
     "name": "@esliph/adapter-fastify",
-    "version": "1.0.5",
+    "version": "1.0.6",
     "description": "",
     "main": "dist/index.js",
     "types": "index.d.ts",
@@ -35,7 +35,7 @@
     },
     "dependencies": {
         "@esliph/decorator": "^1.0.2",
-        "@esliph/http": "^1.0.4",
+        "@esliph/http": "^1.0.5",
         "@esliph/metadata": "^1.0.1",
         "@esliph/module": "^1.0.9",
         "fastify": "^4.24.3"

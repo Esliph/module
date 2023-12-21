@@ -36,7 +36,7 @@
     },
     "dependencies": {
         "@esliph/decorator": "^1.0.2",
-        "@esliph/http": "^1.0.4",
+        "@esliph/http": "^1.0.5",
         "@esliph/metadata": "^1.0.1",
         "@esliph/module": "^1.0.9",
         "socket.io": "^4.7.2"
