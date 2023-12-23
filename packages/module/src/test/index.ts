@@ -5,6 +5,10 @@ import { Bootstrap, Controller, Get, Module, Service } from '../index'
 
 @Service({ name: 'app.service' })
 class AppService {
+    static onLoad() {
+        console.log('Loading APP SERVICE')
+    }
+
     hello() {
         return 'Hello World'
     }
