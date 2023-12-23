@@ -1,6 +1,6 @@
 {
-    "name": "@esliph/adapter-fastify",
-    "version": "1.0.8",
+    "name": "@esliph/adapter-socket.io",
+    "version": "1.0.0",
     "description": "",
     "main": "dist/index.js",
     "types": "index.d.ts",
@@ -28,16 +28,21 @@
     "author": "",
     "license": "MIT",
     "devDependencies": {
-        "@types/node": "^20.10.5",
+        "@types/node": "^20.10.4",
+        "@types/socket.io": "^3.0.2",
         "tsup": "^8.0.1",
-        "tsx": "^4.7.0",
+        "tsx": "^4.6.2",
         "typescript": "^5.3.3"
     },
     "dependencies": {
         "@esliph/decorator": "^1.0.2",
         "@esliph/http": "^1.0.5",
         "@esliph/metadata": "^1.0.1",
-        "@esliph/module": "^1.1.2",
-        "fastify": "^4.25.1"
+        "@esliph/module": "^1.0.9",
+        "socket.io": "^4.7.2"
+    },
+    "optionalDependencies": {
+        "bufferutil": "^4.0.8",
+        "utf-8-validate": "^5.0.10"
     }
 }

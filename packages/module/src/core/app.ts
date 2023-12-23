@@ -20,7 +20,7 @@ import { Adapter } from '../adapter'
 import { isModule, isFilter, isGuard } from '../common/utils'
 import { GuardConfig, FilterConfig } from '../common/module'
 
-export type ApplicationOptions = { log?: { load?: boolean; eventHttp?: boolean; eventListener?: boolean }; port?: number }
+export type ApplicationOptions = { log?: { load?: boolean; eventHttp?: boolean; eventListener?: boolean } }
 
 export class ApplicationModule {
     static listener = new Listener()
@@ -36,14 +36,6 @@ export class ApplicationModule {
         class: any
         metadata: FilterConfig
     }[]
-
-    static listen(port: number) {
-        ApplicationModule.adapters.map(adapter => {
-            adapter.listen({ port }, () => {
-                ApplicationModule.logger.log(`Adapter ${adapter.constructor.name} started on PORT ${port}`)
-            })
-        })
-    }
 
     static fabric(appModule: Construtor, options: ApplicationOptions = {}) {
         ApplicationModule.options = options
@@ -219,7 +211,8 @@ export class ApplicationModule {
                 )
             } else {
                 ApplicationModule.logger.error(
-                    `${arg.request.method} ${arg.request.name} {"error": "${arg.response.getError().message}"${arg.request.headers.playerId ? `, "player" ${arg.request.headers.playerId}}` : '}'
+                    `${arg.request.method} ${arg.request.name} {"error": "${arg.response.getError().message}"${
+                        arg.request.headers.playerId ? `, "player" ${arg.request.headers.playerId}}` : '}'
                     }`,
                     null,
                     { context: '[HTTP]' }

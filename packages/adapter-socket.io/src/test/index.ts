@@ -1,7 +1,6 @@
 import { Controller, Module, Bootstrap, Filter, FilterPerform, Guard } from '@esliph/module'
-import { Get, FastifyAdapter } from '../index'
+import { AdapterSocketIO, OnClient, SocketIO } from '../index'
 import { Request, Response } from '@esliph/http'
-import Fastify from 'fastify'
 
 @Filter({ name: 'guard.test' })
 class FilterTest implements FilterPerform {
@@ -12,7 +11,7 @@ class FilterTest implements FilterPerform {
 @Controller()
 class UserController {
     @Guard({ name: 'guard.test' })
-    @Get('/hello/:id')
+    @OnClient('/hello')
     hello() {
         return { hello: 'world' }
     }
@@ -24,10 +23,10 @@ class UserController {
 })
 class UserModule {}
 
-FastifyAdapter.loadInstance(Fastify())
+AdapterSocketIO.loadInstance(new SocketIO.Server())
 
-const app = Bootstrap(UserModule, { log: { eventHttp: true, eventListener: true, load: true } }, [new FastifyAdapter()])
+const app = Bootstrap(UserModule, { log: { eventHttp: true, eventListener: true, load: true } }, [new AdapterSocketIO()])
 
-FastifyAdapter.instance.listen({port: 8080}, () => {
-    app.logger.log(`Server listen in port ${8080}`)
-})
+AdapterSocketIO.instance.listen(8080, {})
+
+app.logger.log(`IO listen in port ${8080}`)
