@@ -1,7 +1,7 @@
 import { Console } from '@esliph/console'
-import { Client } from '@esliph/http'
+import { Client, Request, Response } from '@esliph/http'
 import { Injection } from '@esliph/injection'
-import { Bootstrap, Controller, Get, Module, Service } from '../index'
+import { Bootstrap, Controller, Filter, FilterPerform, Get, Guard, Module, Service } from '../index'
 
 @Service({ name: 'app.service' })
 class AppService {
@@ -14,10 +14,25 @@ class AppService {
     }
 }
 
+@Filter({ name: 'authorization' })
+class AuthorizationFilter implements FilterPerform {
+    async perform(req: Request<any>, res: Response<any>) {
+        console.log('!')
+    }
+}
+
+@Filter({ name: 'authorization2' })
+class AuthorizationFilter2 implements FilterPerform {
+    async perform(req: Request<any>, res: Response<any>) {
+        console.log('!!')
+    }
+}
+
 @Controller()
 class AppController {
     constructor(@Injection.Inject('app.service') private service: AppService, @Injection.Inject('global.service.logger') private logger: Console) { }
 
+    @Guard({ name: 'auth' })
     @Get('/hello')
     hello() {
         this.logger.error('Teste')
@@ -32,13 +47,15 @@ class TestModule { }
 @Module({
     imports: [TestModule],
     controllers: [AppController],
-    providers: [],
+    providers: [
+        AuthorizationFilter,
+        AuthorizationFilter2,
+        { whenCall: 'auth', use: 'authorization' },
+        { whenCall: 'auth2', use: 'authorization2' }
+    ],
 })
 class AppModule { }
 
-@Service({ name: 'logger' })
-class Consol extends Console { }
+Bootstrap(AppModule, { log: { load: false } })
 
-const application = Bootstrap(AppModule, { log: { load: true, eventHttp: true, eventListener: true } })
-
-new Client().get('/hello').then(res => console.log(res))
+new Client().get('/hello').then(res => { })

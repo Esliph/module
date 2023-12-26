@@ -165,7 +165,7 @@ export class ApplicationModule {
             if (isGuard(controller, event.method)) {
                 const methodMetadata = Metadata.Get.Method<GuardConfig>(METADATA_GUARD_CONFIG_KEY, controller, event.method)
 
-                const filter = ApplicationModule.filters.find(filter => (filter.metadata.name = methodMetadata.name))
+                const filter = ApplicationModule.filters.find(filter => filter.metadata.name == methodMetadata.name)
 
                 if (filter && filter.instance.perform) {
                     ApplicationModule.logLoad(`Loading Guard HTTP "${filter.class.name}" in "${event.metadata.event}"`)
@@ -211,8 +211,7 @@ export class ApplicationModule {
                 )
             } else {
                 ApplicationModule.logger.error(
-                    `${arg.request.method} ${arg.request.name} {"error": "${arg.response.getError().message}"${
-                        arg.request.headers.playerId ? `, "player" ${arg.request.headers.playerId}}` : '}'
+                    `${arg.request.method} ${arg.request.name} {"error": "${arg.response.getError().message}"${arg.request.headers.playerId ? `, "player" ${arg.request.headers.playerId}}` : '}'
                     }`,
                     null,
                     { context: '[HTTP]' }

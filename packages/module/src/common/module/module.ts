@@ -2,7 +2,7 @@ import { DecoratorMetadata, Metadata } from '@esliph/metadata'
 import { ResultException } from '@esliph/common'
 import { Injection } from '@esliph/injection'
 import { Construtor } from '../../@types'
-import { METADATA_MODULE_CONFIG_KEY, METADATA_MODULE_KEY } from '../../constants'
+import { METADATA_FILTER_CONFIG_KEY, METADATA_FILTER_KEY, METADATA_MODULE_CONFIG_KEY, METADATA_MODULE_KEY, METADATA_SERVICE_KEY } from '../../constants'
 import { isController } from '../utils'
 import { isService } from '../utils'
 import { isInstance } from '../../util'
@@ -51,7 +51,12 @@ export function Module(config: Partial<ModuleConfig> = {}) {
                     return
                 }
 
+                const ClassConstructor = typeof serviceOptions.use == 'string' ? Injection.getService<any>(serviceOptions.use).constructor : serviceOptions.use
+
                 Injection.whenCall(serviceOptions.whenCall).use(serviceOptions.use)
+                Metadata.Create.Class({ key: METADATA_FILTER_CONFIG_KEY, value: { name: serviceOptions.whenCall } }, ClassConstructor)
+                Metadata.Create.Class({ key: METADATA_FILTER_KEY, value: { name: serviceOptions.whenCall } }, ClassConstructor)
+                Metadata.Create.Class({ key: METADATA_SERVICE_KEY, value: { name: serviceOptions.whenCall } }, ClassConstructor)
             })
         }
 
