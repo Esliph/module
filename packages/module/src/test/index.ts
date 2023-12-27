@@ -28,12 +28,12 @@ class AuthorizationFilter2 implements FilterPerform {
     }
 }
 
-@Controller()
+@Controller({ prefix: '/hello' })
 class AppController {
     constructor(@Injection.Inject('app.service') private service: AppService, @Injection.Inject('global.service.logger') private logger: Console) { }
 
     @Guard({ name: 'auth' })
-    @Get('/hello')
+    @Get('/world')
     hello() {
         this.logger.error('Teste')
 
@@ -58,4 +58,4 @@ class AppModule { }
 
 Bootstrap(AppModule, { log: { load: false } })
 
-new Client().get('/hello').then(res => { })
+new Client().get('/hello/world').then(res => { })

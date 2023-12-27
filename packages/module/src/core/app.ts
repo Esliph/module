@@ -8,6 +8,7 @@ import { Construtor } from '../@types'
 import { Logger } from '../services/logger.service'
 import { ModuleConfig, ServiceConfig } from '../common/module'
 import {
+    METADATA_CONTROLLER_CONFIG_KEY,
     METADATA_EVENT_CONFIG_KEY,
     METADATA_EVENT_HANDLER_KEY,
     METADATA_FILTER_CONFIG_KEY,
@@ -245,12 +246,18 @@ export class ApplicationModule {
     }
 
     private static getEventsOfTheController(controller: Construtor) {
+        const { prefix = '' } = Metadata.Get.Class<{ prefix: string }>(METADATA_CONTROLLER_CONFIG_KEY, controller) || { prefix: '' }
+
         const events = ([] as any[]).concat(
             ...ApplicationModule.adapters.map(({ adapterKey }) => {
                 return ApplicationModule.getMethodsInClassByMetadataKey<{ event: string; method: string; adapterKey: string }>(controller, adapterKey).map(
                     event => ({
-                        ...event,
+                        method: event.method,
                         adapterKey,
+                        metadata: {
+                            event: prefix + event.metadata.event,
+                            method: event.metadata.method
+                        }
                     })
                 )
             })
