@@ -13,7 +13,7 @@ class FilterTest implements FilterPerform {
 class UserController {
     @Guard({ name: 'guard.test' })
     @Get('/hello/:id')
-    hello() {
+    hello(req: Request) {
         return { hello: 'world' }
     }
 }
@@ -22,12 +22,12 @@ class UserController {
     controllers: [UserController],
     providers: [FilterTest],
 })
-class UserModule {}
+class UserModule { }
 
 FastifyAdapter.loadInstance(Fastify())
 
 const app = Bootstrap(UserModule, { log: { eventHttp: true, eventListener: true, load: true } }, [new FastifyAdapter()])
 
-FastifyAdapter.instance.listen({port: 8080}, () => {
-    app.logger.log(`Server listen in port ${8080}`)
+FastifyAdapter.instance.listen({ port: 3333 }, () => {
+    app.logger.log(`Server listen in port ${3333}`)
 })

@@ -73,7 +73,7 @@ export class FastifyAdapter implements Adapter<FastifyInstance> {
             const request = new Request({
                 headers: req.headers,
                 body: req.body,
-                params: (req.params as any) || {},
+                params: { ...req.query as any, ...req.params as any },
                 method: req.method as any,
                 name: req.routeOptions.url,
             })
