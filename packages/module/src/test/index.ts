@@ -56,6 +56,6 @@ class TestModule { }
 })
 class AppModule { }
 
-Bootstrap(AppModule, { log: { load: false } })
+Bootstrap(AppModule, { log: { load: true } })
 
 new Client().get('/hello/world').then(res => { })

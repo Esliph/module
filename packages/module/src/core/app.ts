@@ -74,6 +74,7 @@ export class ApplicationModule {
         ApplicationModule.initFilters()
         ApplicationModule.initControllers()
         ApplicationModule.initObserverListeners()
+        ApplicationModule.loadProviders()
     }
 
     private static loadModule(module: Construtor, include = false) {
@@ -95,10 +96,6 @@ export class ApplicationModule {
             }
 
             const metadata = Metadata.Get.Class<ServiceConfig>(METADATA_SERVICE_CONFIG_KEY, imp) || {}
-
-            if (imp.onLoad) {
-                imp.onLoad()
-            }
 
             ApplicationModule.logLoad(`Loading${metadata.context ? ` ${metadata.context}` : ' Service'} "${imp.name}"`)
         })
@@ -217,6 +214,18 @@ export class ApplicationModule {
                     null,
                     { context: '[HTTP]' }
                 )
+            }
+        })
+    }
+
+    private static loadProviders() {
+        ApplicationModule.providers.forEach(imp => {
+            if (!isInstance(imp)) {
+                return
+            }
+
+            if (imp.onLoad) {
+                imp.onLoad()
             }
         })
     }
