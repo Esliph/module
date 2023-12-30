@@ -97,6 +97,10 @@ export class ApplicationModule {
 
             const metadata = Metadata.Get.Class<ServiceConfig>(METADATA_SERVICE_CONFIG_KEY, imp) || {}
 
+            if (imp.onLoad) {
+                imp.onLoad()
+            }
+
             ApplicationModule.logLoad(`Loading${metadata.context ? ` ${metadata.context}` : ' Service'} "${imp.name}"`)
         })
 
@@ -224,8 +228,8 @@ export class ApplicationModule {
                 return
             }
 
-            if (imp.onLoad) {
-                imp.onLoad()
+            if (imp.onStart) {
+                imp.onStart()
             }
         })
     }

@@ -9,6 +9,10 @@ class AppService {
         console.log('Loading APP SERVICE')
     }
 
+    static onStart() {
+        console.log('Loading APP SERVICE')
+    }
+
     hello() {
         return 'Hello World'
     }
