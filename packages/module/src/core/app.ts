@@ -295,4 +295,20 @@ export class ApplicationModule {
     private static getAdapterByMetadataKey(key: string) {
         return ApplicationModule.adapters.find(({ adapterKey }) => adapterKey == key) || null
     }
+
+    static getAppModule() {
+        return ApplicationModule.appModule
+    }
+    static getOptions() {
+        return ApplicationModule.options
+    }
+    static getControllers() {
+        return ApplicationModule.controllers
+    }
+    static getProviders() {
+        return ApplicationModule.providers
+    }
+    static getFilters() {
+        return ApplicationModule.filters
+    }
 }
