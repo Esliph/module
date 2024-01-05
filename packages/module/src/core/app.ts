@@ -165,19 +165,26 @@ export class ApplicationModule {
             const handlers: ((...args: any[]) => any)[] = []
 
             if (isGuard(controller, event.method)) {
-                const methodMetadata = Metadata.Get.Method<GuardConfig>(METADATA_GUARD_CONFIG_KEY, controller, event.method)
+                let methodsMetadata = Metadata.Get.Method<GuardConfig[]>(METADATA_GUARD_CONFIG_KEY, controller, event.method) || []
 
-                const filter = ApplicationModule.filters.find(filter => filter.metadata.name == methodMetadata.name)
-
-                if (filter && filter.instance.perform) {
-                    ApplicationModule.logLoad(`Loading Guard HTTP "${filter.class.name}" in "${event.metadata.event}"`)
-
-                    handlers.push(async (req, res) => {
-                        const response = await filter.instance.perform(req, res)
-
-                        return response
-                    })
+                if (!Array.isArray(methodsMetadata)) {
+                    methodsMetadata = [methodsMetadata]
                 }
+
+                methodsMetadata.map(methodMetadata => {
+                    const filter = ApplicationModule.filters.find(filter => filter.metadata.name == methodMetadata.name)
+
+                    if (filter && filter.instance.perform) {
+                        ApplicationModule.logLoad(`Loading Guard HTTP "${filter.class.name}" in "${event.metadata.event}"`)
+
+                        handlers.push(async (req, res) => {
+                            const response = await filter.instance.perform(req, res)
+
+                            return response
+                        })
+                    }
+                })
+
             }
 
             handlers.push(async (req, res) => {

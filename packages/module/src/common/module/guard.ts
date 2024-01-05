@@ -7,7 +7,17 @@ export type GuardConfig = {
 
 export function Guard(config: Partial<GuardConfig> = {}) {
     function handle(target: any, key: string, descriptor: PropertyDescriptor) {
-        Metadata.Create.Method({ key: METADATA_GUARD_CONFIG_KEY, value: config }, target, key)
+        let othersConfig: any[] = []
+
+        try {
+            othersConfig = Metadata.Get.Method<GuardConfig[]>(METADATA_GUARD_CONFIG_KEY, target.constructor, key) ?? []
+        } catch (err: any) {
+            othersConfig = []
+        }
+
+        const value = [...othersConfig, config]
+
+        Metadata.Create.Method({ key: METADATA_GUARD_CONFIG_KEY, value }, target, key)
     }
 
     return DecoratorMetadata.Create.Method({ key: METADATA_GUARD_KEY, value: true }, handle)

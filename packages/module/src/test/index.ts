@@ -37,6 +37,7 @@ class AppController {
     constructor(@Injection.Inject('app.service') private service: AppService, @Injection.Inject('global.service.logger') private logger: Console) { }
 
     @Guard({ name: 'auth' })
+    @Guard({ name: 'auth2' })
     @Get('/world')
     hello() {
         this.logger.error('Teste')
