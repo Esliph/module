@@ -174,15 +174,17 @@ export class ApplicationModule {
                 methodsMetadata.map(methodMetadata => {
                     const filter = ApplicationModule.filters.find(filter => filter.metadata.name == methodMetadata.name)
 
-                    if (filter && filter.instance.perform) {
-                        ApplicationModule.logLoad(`Loading Guard HTTP "${filter.class.name}" in "${event.metadata.event}"`)
-
-                        handlers.push(async (req, res) => {
-                            const response = await filter.instance.perform(req, res)
-
-                            return response
-                        })
+                    if (!filter) {
+                        throw new ResultException({ title: 'Apply Guard in Event', message: `Guard "${methodMetadata.name}" not found` })
                     }
+
+                    ApplicationModule.logLoad(`Loading Guard HTTP "${filter.class.name}" in "${event.metadata.event}"`)
+
+                    handlers.push(async (req, res) => {
+                        const response = await filter.instance.perform(req, res)
+
+                        return response
+                    })
                 })
 
             }
