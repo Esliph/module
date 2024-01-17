@@ -9,11 +9,18 @@ class FilterTest implements FilterPerform {
         // throw new ResultException({ message: 'Erro de Teste' })
     }
 }
-@Controller()
+@Controller({ prefix: '/hello' })
 class UserController {
+
     @Guard({ name: 'guard.test' })
     @Get('/hello/:id')
     hello(req: Request) {
+        return { hello: 'world' }
+    }
+
+    @Guard({ name: 'guard.test' })
+    @Get('/hello/:id', { prefix: '/admin' })
+    adminHello(req: Request) {
         return { hello: 'world' }
     }
 }
