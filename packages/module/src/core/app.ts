@@ -20,6 +20,7 @@ import { getMethodNamesByClass, isInstance } from '../util'
 import { Adapter } from '../adapter'
 import { isModule, isFilter, isGuard } from '../common/utils'
 import { GuardConfig, FilterConfig } from '../common/module'
+import { EventOptions } from '../common/event/decorator'
 
 export type ApplicationOptions = { log?: { load?: boolean; eventHttp?: boolean; eventListener?: boolean } }
 
@@ -272,12 +273,13 @@ export class ApplicationModule {
 
         const events = ([] as any[]).concat(
             ...ApplicationModule.adapters.map(({ adapterKey }) => {
-                return ApplicationModule.getMethodsInClassByMetadataKey<{ event: string; method: string; adapterKey: string }>(controller, adapterKey).map(
+                return ApplicationModule.getMethodsInClassByMetadataKey<{ options: EventOptions, event: string; method: string; adapterKey: string }>(controller, adapterKey).map(
                     event => ({
+                        options: event.metadata.options,
                         method: event.method,
                         adapterKey,
                         metadata: {
-                            event: prefix + event.metadata.event,
+                            event: (event.metadata.options.prefix || prefix) + event.metadata.event,
                             method: event.metadata.method
                         }
                     })

@@ -44,6 +44,13 @@ class AppController {
 
         return this.service.hello()
     }
+
+    @Get('/world', { prefix: '/admin' })
+    adminHello() {
+        this.logger.error('Admin Teste')
+
+        return this.service.hello()
+    }
 }
 
 @Module({ providers: [AppService] })
@@ -63,4 +70,11 @@ class AppModule { }
 
 Bootstrap(AppModule, { log: { load: true } })
 
-new Client().get('/hello/world').then(res => { })
+const client = new Client()
+
+async function App() {
+    await client.get('/hello/world')
+    await client.get('/admin/world')
+}
+
+App()
