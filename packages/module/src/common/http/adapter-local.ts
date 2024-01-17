@@ -11,7 +11,7 @@ export class LocalAdapter implements Adapter<Server<any>> {
         handler()
     }
 
-    loadEvent({ handlers, event, method }: AdapterLoadEventOptions) {
+    loadEvent({ handlers, event, method, statusCode }: AdapterLoadEventOptions) {
         // @ts-expect-error
         this.instance[method](event, ...handlers)
     }

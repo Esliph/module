@@ -1,6 +1,6 @@
-import { Controller, Module, Bootstrap, Filter, FilterPerform, Guard } from '@esliph/module'
+import { Controller, Module, Bootstrap, Filter, FilterPerform, Guard, HttpStatusCode } from '@esliph/module'
 import { Get, FastifyAdapter } from '../index'
-import { Request, Response } from '@esliph/http'
+import { HttpStatusCodes, Request, Response } from '@esliph/http'
 import Fastify from 'fastify'
 
 @Filter({ name: 'guard.test' })
@@ -20,6 +20,7 @@ class UserController {
 
     @Guard({ name: 'guard.test' })
     @Get('/hello/:id', { prefix: '/admin' })
+    @HttpStatusCode(HttpStatusCodes.ACCEPTED)
     adminHello(req: Request) {
         return { hello: 'world' }
     }

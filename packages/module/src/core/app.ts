@@ -10,6 +10,7 @@ import { ModuleConfig, ServiceConfig } from '../common/module'
 import {
     METADATA_CONTROLLER_CONFIG_KEY,
     METADATA_EVENT_CONFIG_KEY,
+    METADATA_EVENT_CONFIG_KEY_STATUS_CODE,
     METADATA_EVENT_HANDLER_KEY,
     METADATA_FILTER_CONFIG_KEY,
     METADATA_GUARD_CONFIG_KEY,
@@ -147,7 +148,7 @@ export class ApplicationModule {
         const events = ApplicationModule.getAllEventsOfController(controller, instance)
 
         events.map(event => {
-            event.adapter.loadEvent({ ...event.metadata, handlers: event.handlers })
+            event.adapter.loadEvent({ ...event, ...event.metadata, handlers: event.handlers })
         })
     }
 
@@ -274,20 +275,26 @@ export class ApplicationModule {
         const events = ([] as any[]).concat(
             ...ApplicationModule.adapters.map(({ adapterKey }) => {
                 return ApplicationModule.getMethodsInClassByMetadataKey<{ options: EventOptions, event: string; method: string; adapterKey: string }>(controller, adapterKey).map(
-                    event => ({
-                        options: event.metadata.options,
-                        method: event.method,
-                        adapterKey,
-                        metadata: {
-                            event: (event.metadata.options.prefix || prefix) + event.metadata.event,
-                            method: event.metadata.method
+                    event => {
+                        const statusCode = Metadata.Get.Method<{ statusCode: number }>(METADATA_EVENT_CONFIG_KEY_STATUS_CODE, controller, event.method)?.statusCode || 200
+
+                        return {
+                            options: event.metadata.options,
+                            method: event.method,
+                            adapterKey,
+                            metadata: {
+                                event: (event.metadata.options.prefix || prefix) + event.metadata.event,
+                                method: event.metadata.method
+                            },
+                            statusCode
                         }
-                    })
+                    }
                 )
             })
         ) as {
             method: string
             adapterKey: string
+            statusCode: number
             metadata: {
                 event: string
                 method: string

@@ -68,7 +68,7 @@ export class FastifyAdapter implements Adapter<FastifyInstance> {
 
     adapterKey = METADATA_ADAPTER_FASTIFY_HTTP_ROUTER_HANDLER_KEY
 
-    loadEvent({ handlers, event, method }: AdapterLoadEventOptions) {
+    loadEvent({ handlers, event, method, statusCode }: AdapterLoadEventOptions) {
         // @ts-expect-error
         this.instance[method](event, async (req: FastifyRequest, res: FastifyReply) => {
             const request = new Request({
@@ -85,7 +85,13 @@ export class FastifyAdapter implements Adapter<FastifyInstance> {
 
             const result = eventRouter.response.getResponse()
 
-            res.status(result.getStatus()).send(result.getResponse())
+            if (result.isSuccess()) {
+                res.status(statusCode)
+            } else {
+                res.status(result.getStatus())
+            }
+
+            res.send({ ...result.getResponse(), status: statusCode })
         })
     }
 

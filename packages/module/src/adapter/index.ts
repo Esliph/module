@@ -1,4 +1,4 @@
-export type AdapterLoadEventOptions = { event: string; method: string; handlers: ((...args: any[]) => any)[] }
+export type AdapterLoadEventOptions = { statusCode: number, event: string; method: string; handlers: ((...args: any[]) => any)[] }
 
 export abstract class Adapter<T = any> {
     abstract adapterKey: string

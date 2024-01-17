@@ -1,7 +1,7 @@
 import { Console } from '@esliph/console'
-import { Client, Request, Response } from '@esliph/http'
+import { Client, HttpStatusCodes, Request, Response } from '@esliph/http'
 import { Injection } from '@esliph/injection'
-import { Bootstrap, Controller, Filter, FilterPerform, Get, Guard, Module, Service } from '../index'
+import { Bootstrap, Controller, Filter, FilterPerform, Get, Guard, HttpStatusCode, Module, Service } from '../index'
 
 @Service({ name: 'app.service' })
 class AppService {
@@ -39,6 +39,7 @@ class AppController {
     @Guard({ name: 'auth' })
     @Guard({ name: 'auth2' })
     @Get('/world')
+    @HttpStatusCode(HttpStatusCodes.ACCEPTED)
     hello() {
         this.logger.error('Teste')
 

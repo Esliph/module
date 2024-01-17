@@ -1,7 +1,15 @@
 import { Decorator } from '@esliph/decorator'
 import { Metadata } from '@esliph/metadata'
-import { METADATA_HTTP_ROUTER_HANDLER_KEY } from '../../constants'
+import { METADATA_HTTP_ROUTER_HANDLER_KEY, METADATA_EVENT_CONFIG_KEY_STATUS_CODE } from '../../constants'
 import { EventOptions } from '../event/decorator'
+
+export function HttpStatusCode(statusCode: number) {
+    function handle(target: any, key: string, descriptor: PropertyDescriptor) {
+        Metadata.Create.Method({ key: METADATA_EVENT_CONFIG_KEY_STATUS_CODE, value: { statusCode } }, target, key)
+    }
+
+    return Decorator.Create.Method(handle)
+}
 
 export function Get(name: string, options: EventOptions = {}) {
     function handle(target: any, key: string, descriptor: PropertyDescriptor) {
