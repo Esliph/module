@@ -2,6 +2,8 @@ import { Console } from '@esliph/console'
 import { Client, HttpStatusCodes, Request, Response } from '@esliph/http'
 import { Injection } from '@esliph/injection'
 import { Bootstrap, Controller, Filter, FilterPerform, Get, Guard, HttpStatusCode, Module, Service } from '../index'
+import { OnEvent } from '../common/event/decorator'
+import { ObserverEmitter } from '@esliph/observer'
 
 @Service({ name: 'app.service' })
 class AppService {
@@ -52,6 +54,11 @@ class AppController {
 
         return this.service.hello()
     }
+
+    @OnEvent('/hello')
+    teste(data: any) {
+        console.log(data)
+    }
 }
 
 @Module({ providers: [AppService] })
@@ -72,10 +79,13 @@ class AppModule { }
 Bootstrap(AppModule, { log: { load: true } })
 
 const client = new Client()
+const emitter = new ObserverEmitter()
 
 async function App() {
     await client.get('/hello/world')
     await client.get('/admin/world')
+
+    emitter.emit('/hello', { hello: true })
 }
 
 App()

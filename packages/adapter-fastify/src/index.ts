@@ -3,7 +3,6 @@ import { EventOptions } from '@esliph/module/dist/common/event/decorator'
 import { Decorator } from '@esliph/decorator'
 import { Metadata } from '@esliph/metadata'
 import { Request, EventRouter } from '@esliph/http'
-import Fastify from 'fastify'
 import { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 
 const METADATA_ADAPTER_FASTIFY_HTTP_ROUTER_HANDLER_KEY = 'fastify.adapter.http.router.event'
