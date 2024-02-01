@@ -6,7 +6,7 @@ import { ApplicationModule, ApplicationOptions } from '../core/app'
 
 export type BootstrapOptions = ApplicationOptions & { logger: Console<any, any, any, any> }
 
-export function Bootstrap(appModule: Construtor, options: Partial<BootstrapOptions> = {}, adapters: Adapter[] = []) {
+export async function Bootstrap(appModule: Construtor, options: Partial<BootstrapOptions> = {}, adapters: Adapter[] = []) {
     if (options.logger) {
         ApplicationModule.useLogger(options.logger)
     }
@@ -16,7 +16,7 @@ export function Bootstrap(appModule: Construtor, options: Partial<BootstrapOptio
         ApplicationModule.useAdapter(adapter)
     })
 
-    ApplicationModule.fabric(appModule, options)
+    await ApplicationModule.fabric(appModule, options)
 
     return ApplicationModule
 }

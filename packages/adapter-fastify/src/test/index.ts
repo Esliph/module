@@ -32,10 +32,14 @@ class UserController {
 })
 class UserModule { }
 
-FastifyAdapter.loadInstance(Fastify())
+async function App() {
+    FastifyAdapter.loadInstance(Fastify())
 
-const app = Bootstrap(UserModule, { log: { eventHttp: true, eventListener: true, load: true } }, [new FastifyAdapter()])
+    const app = await Bootstrap(UserModule, { log: { eventHttp: true, eventListener: true, load: true } }, [new FastifyAdapter()])
 
-FastifyAdapter.instance.listen({ port: 3333 }, () => {
-    app.logger.log(`Server listen in port ${3333}`)
-})
+    FastifyAdapter.instance.listen({ port: 3333 }, () => {
+        app.logger.log(`Server listen in port ${3333}`)
+    })
+}
+
+App()

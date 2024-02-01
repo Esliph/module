@@ -40,7 +40,7 @@ export class ApplicationModule {
         metadata: FilterConfig
     }[]
 
-    static fabric(appModule: Construtor, options: ApplicationOptions = {}) {
+    static async fabric(appModule: Construtor, options: ApplicationOptions = {}) {
         ApplicationModule.options = options
 
         ApplicationModule.logLoad('Loading components...')
@@ -51,7 +51,7 @@ export class ApplicationModule {
 
         ApplicationModule.appModule = appModule
 
-        ApplicationModule.initComponents()
+        await ApplicationModule.initComponents()
         ApplicationModule.logLoad('Components initialized')
     }
 
@@ -67,8 +67,8 @@ export class ApplicationModule {
         ApplicationModule.logLoad(`Loading Adapter "${adapter.constructor.name}"`)
     }
 
-    private static initComponents() {
-        const modules = ApplicationModule.loadModule(ApplicationModule.appModule, true)
+    private static async initComponents() {
+        const modules = await ApplicationModule.loadModule(ApplicationModule.appModule, true)
 
         ApplicationModule.controllers = modules.controllers
         ApplicationModule.providers = modules.providers
@@ -76,10 +76,10 @@ export class ApplicationModule {
         ApplicationModule.initFilters()
         ApplicationModule.initControllers()
         ApplicationModule.initObserverListeners()
-        ApplicationModule.loadProviders()
+        await ApplicationModule.loadProviders()
     }
 
-    private static loadModule(module: Construtor, include = false) {
+    private static async loadModule(module: Construtor, include = false) {
         ApplicationModule.logLoad(`Loading Module "${module.name}"`)
 
         const configModule = Metadata.Get.Class<ModuleConfig>(METADATA_MODULE_CONFIG_KEY, module)
@@ -92,9 +92,11 @@ export class ApplicationModule {
             modules.push(module)
         }
 
-        providers.forEach(async imp => {
+        for (let i = 0; i < providers.length; i++) {
+            const imp = providers[i]
+
             if (!isInstance(imp)) {
-                return
+                continue
             }
 
             const metadata = Metadata.Get.Class<ServiceConfig>(METADATA_SERVICE_CONFIG_KEY, imp) || {}
@@ -108,15 +110,16 @@ export class ApplicationModule {
             }
 
             ApplicationModule.logLoad(`Loading${metadata.context ? ` ${metadata.context}` : ' Service'} "${imp.name}"`)
-        })
+        }
 
-        configModule.imports.map(module => {
-            const configs = ApplicationModule.loadModule(module)
+        for (let i = 0; i < configModule.imports.length; i++) {
+            const module = configModule.imports[i]
+            const configs = await ApplicationModule.loadModule(module)
 
             configs.modules.map(module => modules.push(module))
             configs.controllers.map(controller => controllers.push(controller))
             configs.providers.map(provider => providers.push(provider))
-        })
+        }
 
         return {
             modules: [...modules, ...configModule.imports],
@@ -237,10 +240,12 @@ export class ApplicationModule {
         })
     }
 
-    private static loadProviders() {
-        ApplicationModule.providers.forEach(async imp => {
+    private static async loadProviders() {
+        for (let i = 0; i < ApplicationModule.providers.length; i++) {
+            const imp = ApplicationModule.providers[i]
+
             if (!isInstance(imp)) {
-                return
+                continue
             }
 
             if (imp.onStart) {
@@ -250,7 +255,7 @@ export class ApplicationModule {
                     imp.onStart()
                 }
             }
-        })
+        }
     }
 
     private static logLoad(message: any) {
