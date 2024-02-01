@@ -24,3 +24,8 @@ export function removeAttributesOfObject<T extends object>(obj: T, ...keys: (key
 
     return { ...obj }
 }
+
+const AsyncFunction = (async () => { }).constructor
+export function isAsyncFunction(value: any) {
+    return value instanceof AsyncFunction
+}

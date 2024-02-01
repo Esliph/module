@@ -17,7 +17,7 @@ import {
     METADATA_MODULE_CONFIG_KEY,
     METADATA_SERVICE_CONFIG_KEY,
 } from '../constants'
-import { getMethodNamesByClass, isInstance } from '../util'
+import { getMethodNamesByClass, isAsyncFunction, isInstance } from '../util'
 import { Adapter } from '../adapter'
 import { isModule, isFilter, isGuard } from '../common/utils'
 import { GuardConfig, FilterConfig } from '../common/module'
@@ -92,7 +92,7 @@ export class ApplicationModule {
             modules.push(module)
         }
 
-        providers.forEach(imp => {
+        providers.forEach(async imp => {
             if (!isInstance(imp)) {
                 return
             }
@@ -100,7 +100,13 @@ export class ApplicationModule {
             const metadata = Metadata.Get.Class<ServiceConfig>(METADATA_SERVICE_CONFIG_KEY, imp) || {}
 
             if (imp.onLoad) {
-                imp.onLoad()
+                if (isAsyncFunction(imp.onLoad)) {
+                    console.log('@')
+                    await imp.onLoad()
+                } else {
+                    console.log('@@')
+                    imp.onLoad()
+                }
             }
 
             ApplicationModule.logLoad(`Loading${metadata.context ? ` ${metadata.context}` : ' Service'} "${imp.name}"`)
@@ -234,13 +240,19 @@ export class ApplicationModule {
     }
 
     private static loadProviders() {
-        ApplicationModule.providers.forEach(imp => {
+        ApplicationModule.providers.forEach(async imp => {
             if (!isInstance(imp)) {
                 return
             }
 
             if (imp.onStart) {
-                imp.onStart()
+                if (isAsyncFunction(imp.onStart)) {
+                    console.log('@')
+                    await imp.onStart()
+                } else {
+                    console.log('@@')
+                    imp.onStart()
+                }
             }
         })
     }
