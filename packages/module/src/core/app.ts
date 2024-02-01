@@ -101,10 +101,8 @@ export class ApplicationModule {
 
             if (imp.onLoad) {
                 if (isAsyncFunction(imp.onLoad)) {
-                    console.log('@')
                     await imp.onLoad()
                 } else {
-                    console.log('@@')
                     imp.onLoad()
                 }
             }
@@ -247,10 +245,8 @@ export class ApplicationModule {
 
             if (imp.onStart) {
                 if (isAsyncFunction(imp.onStart)) {
-                    console.log('@')
                     await imp.onStart()
                 } else {
-                    console.log('@@')
                     imp.onStart()
                 }
             }
