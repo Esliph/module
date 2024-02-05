@@ -1,6 +1,6 @@
 {
     "name": "@esliph/adapter-fastify",
-    "version": "1.2.4",
+    "version": "1.2.5",
     "description": "",
     "main": "dist/index.js",
     "types": "index.d.ts",
@@ -28,7 +28,7 @@
     "author": "",
     "license": "MIT",
     "devDependencies": {
-        "@types/node": "^20.11.10",
+        "@types/node": "^20.11.16",
         "tsup": "^8.0.1",
         "tsx": "^4.7.0",
         "typescript": "^5.3.3"
