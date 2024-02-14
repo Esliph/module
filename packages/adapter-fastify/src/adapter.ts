@@ -1,4 +1,4 @@
-import { FastifyInstance } from 'fastify'
+import { FastifyInstance, FastifyRequest } from 'fastify'
 import { EventRouter, Request } from '@esliph/http'
 import { Adapter, AdapterLoadEventOptions } from '@esliph/module/dist/adapter'
 import { METADATA_ADAPTER_FASTIFY_HTTP_ROUTER_HANDLER_KEY } from './global'
@@ -18,6 +18,15 @@ export class FastifyAdapter implements Adapter<FastifyInstance> {
                 params: { ...req.query as any, ...req.params as any },
                 method: req.method as any,
                 name: req.routeOptions.url,
+                attributes: {
+                    ...req,
+                    body: undefined,
+                    headers: undefined,
+                    query: undefined,
+                    method: undefined,
+                    params: undefined,
+                    routeOptions: { url: undefined },
+                }
             })
 
             const eventRouter = new EventRouter(request, handlers || ([] as any), true)
