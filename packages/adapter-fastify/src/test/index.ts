@@ -22,6 +22,7 @@ class UserController {
     @Get('/hello/:id', { prefix: '/admin' })
     @HttpStatusCode(HttpStatusCodes.ACCEPTED)
     adminHello(req: Request) {
+        throw new Error('Teste')
         return { hello: 'world' }
     }
 }

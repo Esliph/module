@@ -41,7 +41,13 @@ export class FastifyAdapter implements Adapter<FastifyInstance> {
                 res.status(result.getStatus())
             }
 
-            res.send({ ...result.getResponse(), status: statusCode })
+            res.send({
+                ...result.getResponse(),
+                status: result.isSuccess() ? statusCode : result.getStatus(),
+                ...(!result.isSuccess() && {
+                    error: { ...result.getError(), stack: '' }
+                })
+            })
         })
     }
 
