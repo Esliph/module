@@ -1,6 +1,6 @@
 {
     "name": "@esliph/adapter-fastify",
-    "version": "1.2.7",
+    "version": "1.2.8",
     "description": "",
     "main": "dist/index.js",
     "types": "index.d.ts",
@@ -28,16 +28,16 @@
     "author": "",
     "license": "MIT",
     "devDependencies": {
-        "@types/node": "^20.11.19",
+        "@types/node": "^20.11.20",
         "tsup": "^8.0.2",
         "tsx": "^4.7.1",
         "typescript": "^5.3.3"
     },
     "dependencies": {
         "@esliph/decorator": "^1.0.2",
-        "@esliph/http": "^1.0.8",
+        "@esliph/http": "^1.1.1",
         "@esliph/metadata": "^1.0.1",
-        "@esliph/module": "^1.2.8",
+        "@esliph/module": "^1.2.9",
         "fastify": "^4.26.1"
     }
 }
